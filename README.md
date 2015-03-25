@@ -9,7 +9,7 @@ scan finished
 ```
 
 ```
-$ ./portscan.go -start=1656 -end=1740 -timeout=250ms
+$ ./portscan -start=1656 -end=1740 -timeout=250ms
 open 1656
 open 1660
 open 1657
