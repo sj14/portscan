@@ -45,6 +45,8 @@ func main() {
 		log.Fatal("end port should be higher than start port")
 	}
 
+	startTime := time.Now()
+
 	for port := *startPortFlag; port <= *endPortFlag; port++ {
 		wg.Add(1)
 		go scan(port)
@@ -55,7 +57,8 @@ func main() {
 		time.Sleep(pauseDuration)
 	}
 	wg.Wait()
-	fmt.Println("scan finished")
+	scanDuration := time.Since(startTime)
+	fmt.Printf("scan finished in %v", scanDuration)
 }
 
 func scan(port int) {
