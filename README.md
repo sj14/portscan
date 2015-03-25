@@ -1,12 +1,19 @@
 # portscan
 a simple portscanner written in go
 
-# example
+# examples
 ```
-$ go build portscan.go 
 $ ./portscan -host=google.de
 open 80
 scan finished
+```
+
+```
+$ ./portscan.go -start=1656 -end=1740 -timeout=250ms
+open 1656
+open 1660
+open 1657
+scan finished in 109.437457ms
 ```
 
 # arguments
