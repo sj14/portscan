@@ -76,6 +76,7 @@ func scan(host string, port int, timeout string, listClosed bool) {
 	timeoutDuration, err := time.ParseDuration(timeout)
 	if err != nil {
 		log.Println(err)
+		return
 	}
 
 	conn, err := net.DialTimeout("tcp", host+":"+portStr, timeoutDuration)
