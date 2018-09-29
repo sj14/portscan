@@ -38,14 +38,14 @@ func init() {
 		endPortFlag = startPortFlag
 	}
 
-	if *startPortFlag < 0 || *startPortFlag > max {
-		log.Fatalf("ending port out of range (should be between 0 and %d)\n", max)
+	if *startPortFlag < 1 || *startPortFlag > max {
+		log.Fatalf("starting port out of range (should be between 1 and %d)\n", max)
 	}
-	if *endPortFlag < 0 || *endPortFlag > max {
-		log.Fatalf("ending port out of range (should be between 0 and %d)\n", max)
+	if *endPortFlag < 1 || *endPortFlag > max {
+		log.Fatalf("ending port out of range (should be between 1 and %d)\n", max)
 	}
 	if *endPortFlag < *startPortFlag {
-		log.Fatal("ending port must be greater than beginning port")
+		log.Fatalln("ending port must be greater than starting port")
 	}
 }
 
@@ -54,12 +54,12 @@ func main() {
 
 	pauseDuration, err := time.ParseDuration(*pauseFlag)
 	if err != nil {
-		log.Print(err)
+		log.Println(err)
 	}
 
 	for port := *startPortFlag; port <= *endPortFlag; port++ {
 		wg.Add(1)
-		go scan(port)
+		go scan(*hostFlag, port, *timeoutFlag, *listClosedFlag)
 		time.Sleep(pauseDuration)
 	}
 
@@ -68,21 +68,24 @@ func main() {
 	fmt.Printf("scan finished in %v\n", scanDuration)
 }
 
-func scan(port int) {
-	portString := strconv.Itoa(port)
-	timeoutDuration, err := time.ParseDuration(*timeoutFlag)
+func scan(host string, port int, timeout string, listClosed bool) {
+	defer wg.Done()
+
+	portStr := strconv.Itoa(port)
+
+	timeoutDuration, err := time.ParseDuration(timeout)
 	if err != nil {
-		log.Print(err)
+		log.Println(err)
 	}
 
-	conn, err := net.DialTimeout("tcp", *hostFlag+":"+portString, timeoutDuration)
+	conn, err := net.DialTimeout("tcp", host+":"+portStr, timeoutDuration)
 	if err != nil {
-		if *listClosedFlag == true {
+		if listClosed {
 			log.Println(err)
 		}
-	} else {
-		conn.Close()
-		fmt.Printf("open %d\n", port)
+		return
 	}
-	wg.Done()
+
+	conn.Close()
+	log.Printf("open %d\n", port)
 }
